@@ -75,7 +75,7 @@ CloudFormation do
     })
   end
 
-  record = defined?(dns_record) ? dns_record : 'postgres'
+  record = external_parameters.fetch(:dns_record, 'postgres')
 
   Route53_RecordSet('DatabaseIntHostRecord') do
     HostedZoneName FnJoin('', [ Ref('EnvironmentName'), '.', Ref('DnsDomain'), '.'])
