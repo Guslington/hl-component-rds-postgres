@@ -53,6 +53,7 @@ CloudFormation do
     StorageType 'gp2'
     Engine 'postgres'
     EngineVersion external_parameters[:engineVersion]
+    DBName db_name if !db_name.empty?
     DBParameterGroupName Ref('ParametersRDS')
     MasterUsername instance_username
     MasterUserPassword instance_password
