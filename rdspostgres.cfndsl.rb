@@ -76,6 +76,11 @@ CloudFormation do
     })
   end
 
+  Output(:DBEndpoint) {
+    Value(FnGetAtt(:RDS, 'Endpoint.Address'))
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-DBEndpoint")
+  }
+
   record = external_parameters.fetch(:dns_record, 'postgres')
 
   Route53_RecordSet('DatabaseIntHostRecord') do
