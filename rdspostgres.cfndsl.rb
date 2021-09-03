@@ -41,7 +41,8 @@ CloudFormation do
   master_password = external_parameters.fetch(:master_password, '')
   instance_username = !master_username.empty? ? master_username : FnJoin('', [ '{{resolve:ssm:', FnSub(external_parameters[:master_login]['username_ssm_param']), ':1}}' ])
   instance_password = !master_password.empty? ? master_password : FnJoin('', [ '{{resolve:ssm-secure:', FnSub(external_parameters[:master_login]['password_ssm_param']), ':1}}' ])
-
+  db_name = external_parameters.fetch(:db_name, '')
+  
   maintenance_window = external_parameters.fetch(:maintenance_window, nil)
   kms_key_id = external_parameters.fetch(:kms_key_id, nil)
   storage_encrypted = external_parameters.fetch(:storage_encrypted, false)
@@ -53,6 +54,7 @@ CloudFormation do
     StorageType 'gp2'
     Engine 'postgres'
     EngineVersion external_parameters[:engineVersion]
+    DBName db_name if !db_name.empty?
     DBParameterGroupName Ref('ParametersRDS')
     MasterUsername instance_username
     MasterUserPassword instance_password
@@ -74,6 +76,16 @@ CloudFormation do
       }
     })
   end
+
+  Output(:DBEndpoint) {
+    Value(FnGetAtt(:RDS, 'Endpoint.Address'))
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-DBEndpoint")
+  }
+
+  Output(:DBPort) {
+    Value(FnGetAtt(:RDS, 'Endpoint.Port'))
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-DBPort")
+  }
 
   record = external_parameters.fetch(:dns_record, 'postgres')
 
