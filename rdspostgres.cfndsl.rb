@@ -87,6 +87,11 @@ CloudFormation do
     Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-DBPort")
   }
 
+  Output(:SecurityGroup) {
+    Value(Ref(:SecurityGroupRDS))
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-security-group")
+  }
+
   record = external_parameters.fetch(:dns_record, 'postgres')
 
   Route53_RecordSet('DatabaseIntHostRecord') do
