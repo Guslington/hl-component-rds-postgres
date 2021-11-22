@@ -50,6 +50,9 @@ family: 'postgres13'
 dns_record: db
 deletion_policy: Snapshot
 
+parameters:
+  authentication_timeout: '60'
+
 storage_encrypted: true
 maintenance_window: sat:18:00-sat:18:30
 
