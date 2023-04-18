@@ -91,14 +91,4 @@ CloudFormation do
     Value(Ref(:SecurityGroupRDS))
     Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-security-group")
   }
-
-  record = external_parameters.fetch(:dns_record, 'postgres')
-
-  Route53_RecordSet('DatabaseIntHostRecord') do
-    HostedZoneName FnJoin('', [ Ref('EnvironmentName'), '.', Ref('DnsDomain'), '.'])
-    Name FnJoin('', [ record, '.', Ref('EnvironmentName'), '.', Ref('DnsDomain'), '.' ])
-    Type 'CNAME'
-    TTL 60
-    ResourceRecords [ FnGetAtt('RDS','Endpoint.Address') ]
-  end
 end
